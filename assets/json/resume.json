@@ -21,10 +21,20 @@
   },
   "work": [
     {
+      "name": "Renault Digital",
+      "position": "Data & AI Engineer",
+      "startDate": "2025-09-08",
+      "endDate": "",
+      "highlights": [],
+      "summary": "",
+      "url": "https://jobs.renault-digital.com/",
+      "location": "Boulogne-Billancourt, France"
+    },
+    {
       "name": "Schneider Electric",
       "position": "AI Software Engineer",
       "startDate": "2025-02-28",
-      "endDate": "",
+      "endDate": "2025-08-06",
       "summary": "As an AI Software Engineer at Schneider Electric, I am involved in the development of innovative solutions to enhance industrial processes and improve operational efficiency.",
       "highlights": [
         "Deployment of a cloud-to-edge RAG (Retrieval-Augmented Generation) system for industrial procedure explanations, enabling real-time access to information.",
@@ -38,7 +48,7 @@
       "name": "LittleBigCode",
       "position": "Data Engineer Consultant",
       "startDate": "2023-04-30",
-      "endDate": "",
+      "endDate": "2025-08-06",
       "highlights": [],
       "summary": "As a Data Engineer Consultant at LittleBigCode, I support clients in the design and deployment of scalable data solutions, optimizing architecture, pipeline industrialization, and cloud infrastructure to ensure reliable and high-performance workflows.\n\nMy expertise spans CI/CD automation and infrastructure (Terraform, Kubernetes), ETL pipeline development (Spark, dbt), and API deployment (FastAPI, PostgreSQL, Apache Cassandra) in both on-premise and cloud environments. I also work on data platform optimization and provide technical support to analytics teams.\n\nPassionate about data engineering, I leverage my skills to develop high-value solutions, enhancing system reliability and facilitating access to strategic insights. 🚀",
       "url": "https://littlebigcode.fr/",
