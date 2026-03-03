@@ -22,7 +22,7 @@ Nous allons créer un [compte Atlas](https://account.mongodb.com/account/registe
 
 ### Création d'un projet Atlas
 
-Une fois que vous avez créé votre compte vous allez pouvoir créer un projet, nommé `but-sd` ici. Ensuite, une page demandera d'ajouter des membres, il n'y a rien à faire. Confirmez simplement la création du projet en cliquant sur **Create project**.
+Une fois que vous avez créé votre compte vous allez pouvoir créer un projet, nommé `cnam` ici. Ensuite, une page demandera d'ajouter des membres, il n'y a rien à faire. Confirmez simplement la création du projet en cliquant sur **Create project**.
 
 {% include figure.liquid loading="eager" path="assets/img/cnam/mongodb/creation-project.png" title="Creation project" class="img-fluid rounded z-depth-1" %}
 
@@ -36,7 +36,7 @@ Une fois sur la page des **Database access** cliquez sur **Add new database user
 
 {% include figure.liquid loading="eager" path="assets/img/cnam/mongodb/creation-user.png" title="Creation user" class="img-fluid rounded z-depth-1" %}
 
-> :warning: Pensez à bien enregistrer le mot de passe dans un endroit sécurisé de votre ordinateur et ne pas le mettre en public.
+> :warning: Pensez à bien enregistrer le mot de passe dans un endroit sécurisé de votre ordinateur, nous en aurons besoin par la suite pour nous connecter à la base de données.
 >
 {: .block-warning }
 
@@ -64,12 +64,13 @@ Sur la page suivante nous pouvons choisir le type de Driver, Python dans notre c
 
 {% include figure.liquid loading="eager" path="assets/img/cnam/mongodb/mongodb-driver.png" title="MongoDB driver" class="img-fluid rounded z-depth-1" %}
 
-> [!NOTE]
-> Pensez à copier la *connection string*, cela nous servira ensuite à nous connecter en Python à la base de données que nous venons de créer.
+> Copiez la *connection string*, cela nous servira ensuite à nous connecter en Python à la base de données que nous venons de créer.
+>
+{: .block-example }
 
 ## Installation de MongoDB Compass
 
-Pour visualiser les données de notre base de données, nous allons installer [MongoDB Compass](https://downloads.mongodb.com/compass/mongodb-compass-1.44.7-win32-x64.exe). Pour cela, cliquez sur le lien et suivez les instructions d'installation.
+Pour visualiser les données de notre base de données, nous allons installer [MongoDB Compass](https://www.mongodb.com/try/download/compass). Pour cela, cliquez sur le lien et suivez les instructions d'installation selon votre OS.
 
 ## Connexion à MongoDB Compass
 
@@ -79,25 +80,27 @@ Maintenant nous allons pouvoir utiliser le cluster créé sur Atlas. Commençons
 
 La connexion va se faire via la *connection string* qui peut être trouvée dans la configuration du cluster Atlas.
 
-> :warning: N'oubliez pas de remplacer le mot de passe sur l'image ci-dessous par celui que vous avez enregistré plus haut.
->
+> :warning: N'oubliez pas de remplacer le mot de passe sur l'image ci-dessous par celui que vous avez enregistré plus haut et de remplacer `mon_super_mot_de_passe_genere` dans `mongodb+srv://user_mongo:mon_super_mot_de_passe_genere@cluster-cnam.douiht4.mongodb.net/?appName=cluster-cnam` (sans les <>).
 {: .block-warning }
 
 {% include figure.liquid loading="eager" path="assets/img/cnam/mongodb/compass-add-connection.png" title="Compass add connection" class="img-fluid rounded z-depth-1" %}
 
-Une fois ceci fait, nous allons créer une base de données appelée `tp` qui contiendra une collection nommée `restaurants`.
+Une fois ceci fait, nous allons créer une base de données appelée `tp` qui contiendra une collection nommée `pathologies`.
 
+{% include figure.liquid loading="eager" path="assets/img/cnam/mongodb/create-database-collection.png" title="Create database collection" class="img-fluid rounded z-depth-1" %}
 {% include figure.liquid loading="eager" path="assets/img/cnam/mongodb/create-database.png" title="Create database" class="img-fluid rounded z-depth-1" %}
 
 ## Import des données
 
-Ensuite, il suffit d'importer le fichier JSON qui se situe [ici](https://github.com/alannadevgen/formation-nosql/blob/main/TP/TP1/restaurants.json).
+Ensuite, il suffit d'importer le fichier JSON qui se situe [ici](https://github.com/aldevgen/data/blob/main/Pathologies/pathologies.json).
 
 {% include figure.liquid loading="eager" path="assets/img/cnam/mongodb/import-data.png" title="Import data" class="img-fluid rounded z-depth-1" %}
 
+Les données sont issues de la base de données [Caisse nationale de l'Assurance Maladie (Cnam)](https://www.data.gouv.fr/datasets/pathologies-effectif-de-patients-par-pathologie-sexe-classe-dage-et-territoire-departement-region/informations). Seules 8000 lignes ont été importées pour des raisons de temps de traitement, car la base de données d'origine représente 2 Go de données.
+
 ## Interrogation des données MongoDB en Python
 
-Pour requêter les données dans notre base de données nous allons utiliser le package [`pymongo`](https://docs.mongodb.com/drivers/pymongo/), que l'on peut installer via :
+Pour requêter les données dans notre base de données, nous allons utiliser le package [`pymongo`](https://docs.mongodb.com/drivers/pymongo/). Pour l'installer, il faut exécuter la commande dans un terminal :
 
 ```bash
 pip install pymongo
@@ -138,41 +141,42 @@ Vous pouvez valider la structure d'un JSON sur [jsonlint.com/](http://jsonlint.c
 
 ```json
 {
-    "address": {
-        "building": "469",
-        "coord": [
-            -73.9617,
-            40.6629
-        ],
-        "street": "Flatbush Avenue",
-        "zipcode": "11225"
-    },
-    "borough": "Brooklyn",
-    "cuisine": "Hamburgers",
-    "grades": [
-        {
-            "date": "2014-12-30 01:00:00",
-            "grade": "A",
-            "score": 8
-        },
-        {
-            "date": "2014-07-01 02:00:00",
-            "grade": "B",
-            "score": 23
-        }
-    ],
-    "name": "Wendy'S",
-    "restaurant_id": "30112340"
+  "_id": {
+    "$oid": "69a6c5d9b831adc7bd251641"
+  },
+  "annee": "2023",
+  "patho_niv1": "Maladies cardioneurovasculaires",
+  "patho_niv2": "Troubles du rythme ou de la conduction cardiaque",
+  "patho_niv3": "Troubles du rythme ou de la conduction cardiaque",
+  "top": "MCV_TRC_IND",
+  "cla_age_5": "45-49",
+  "sexe": "9",
+  "region": "53",
+  "dept": "22",
+  "ntop": 210,
+  "npop": 34660,
+  "prev": 0.603,
+  "niveau_prioritaire": [
+    "2",
+    "3"
+  ],
+  "libelle_classe_age": "de 45 à 49 ans",
+  "libelle_sexe": "tous sexes",
+  "tri": 32
 }
 ```
 
 # Requêtage avec MongoDB
 
-Les données `JSON` sont similaires à un dictionnaire `Python`. Pour récupérer le premier document, nous utilisons la fonction `find()` de l'objet créé `m`.
+Les données `JSON` sont similaires à un dictionnaire `Python`. Pour récupérer le premier document, nous utilisons la fonction `find()` de l'objet créé `first_doc`.
 
 ```python
 first_doc = db.collection_name.find(limit = 1)
 ```
+
+> Dans notre cas, `collection_name` correspond à `pathologies` et `db` correspond à la base de données `tp` que nous avons créée précédemment.
+>
+{: .block-example }
 
 L'objet retourné est un **curseur**, et non le résultat. Nous avons celui-ci lorsque nous utilisons `first_doc` dans une commande telle qu'une transformation en `list` par exemple.
 
@@ -214,8 +218,9 @@ Pour sélectionner les documents, nous allons utiliser le paramètre dans la fon
 
 ### Comptage de certains documents
 
-> [!TIP]
 > Les requêtes ci-dessous sont des exemples de requêtes sur une base de données fictive `students` à propos des étudiants et des cours qu'ils suivent à l'université.
+>
+{: .block-example }
 
 - Nombre d'étudiants de l'Université de Paris
 
@@ -310,7 +315,7 @@ db.collection_name.distinct(
     - Projection (quels champs afficher)
     - `limit` pour n'avoir que les $n$ premiers documents
     - `sort` pour effectuer un tri des documents
-- PyMongo renvoit un curseur, qu'il faut donc gérer pour avoir le résultat
+- PyMongo renvoi un curseur, qu'il faut donc gérer pour avoir le résultat
 - Transformation en `DataFrame` (du module `pandas`)
   - Ce format n'est pas forcément idéal pour certains champs, notamment ceux imbriqués.
 
@@ -397,14 +402,14 @@ Maintenant que tout est mis en place nous pouvons nous connecter à la base de d
 ```python
 import pymongo
 
-
+# Remplacer l'URI par celle récupéree sur Atlas, en n'oubliant pas de remplacer le mot de passe
 URI = 'mongodb+srv://<user_name>:<password>@<cluster_name>.zrugz.mongodb.net/?retryWrites=true&w=majority&appName=<cluster_name>'
 client = pymongo.MongoClient(URI)
 db = client.tp
 
 # output the name of the collections in the database
-print("Collections: ", db.list_collection_names())
-print("Restaurants: ", db.restaurants)
+print("Collections: ", tp.list_collection_names())
+print("Pathologies: ", tp.pathologies)
 ```
 
 ## A faire
