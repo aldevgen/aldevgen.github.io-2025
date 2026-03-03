@@ -414,19 +414,16 @@ print("Pathologies: ", tp.pathologies)
 
 ## A faire
 
-1. Donner les styles de cuisine présent dans la collection
-1. Donner tous les grades possibles dans la base
-1. Compter le nombre de restaurants proposant de la cuisine française ("French")
-1. Compter le nombre de restaurants situés sur la rue "Central Avenue"
-1. Compter le nombre de restaurants ayant eu une note supérieure à 50
-1. Lister tous les restaurants, en n'affichant que le nom, l'immeuble et la rue
-1. Lister tous les restaurants nommés "Burger King" (nom et quartier uniquement)
-1. Lister les restaurants situés sur les rues "Union Street" ou "Union Square"
-1. Lister les restaurants situés au-dessus de la lattitude 40.90
-1. Lister les restaurants ayant eu un score de 0 et un grade "A"
-1. Lister les restaurants (nom et rue uniquement) situés sur une rue ayant le terme "Union" dans le nom
-1. Lister les restaurants ayant eu une visite le 1er février 2014
-1. Lister les restaurants situés entre les longitudes -74.2 et -74.1 et les lattitudes 40.5 et 40.6.
+1. Lister toutes les catégories de pathologies de niveau 1
+2. Lister toutes les catégories de pathologies de niveau 2
+3. Compter le nombre de documents concernant les "Maladies cardioneurovasculaires"
+4. Compter le nombre de documents concernant la tranche d'âge "45-49 ans"
+5. Compter le nombre de documents où la prévalence (prev) est supérieure à 0.2
+6. Lister tous les documents, en n'affichant que l'année, la pathologie de niveau 1, la région et le département
+7. Lister toutes les pathologies de niveau 3 pour les femmes (sexe=2), en affichant seulement la pathologie et la classe d'âge
+8. Lister les pathologies pour les régions "32" ou "44", en affichant la pathologie de niveau 1, le département et la prévalence
+9. Lister les pathologies où le niveau prioritaire contient "2", en affichant la pathologie de niveau 2, la région et le niveau prioritaire
+10. Lister les pathologies où la prévalence est nulle (prev=null), en affichant la pathologie de niveau 3, la région et le département
 
 # Agrégats dans MongoDB
 
