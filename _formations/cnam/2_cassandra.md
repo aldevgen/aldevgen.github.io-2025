@@ -3,7 +3,7 @@ layout: page
 title: TP2
 description: Introduction à Apache Cassandra et au langage de requête CQL
 importance: 1
-category: "Cnam CS103 - Bases de données à grande échelle"
+category: "Cnam CS103 - Introduction au NoSQL"
 permalink: /cnam/cassandra/
 type: formation
 visible: false
