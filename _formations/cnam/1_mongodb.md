@@ -96,7 +96,7 @@ Une fois ceci fait, nous allons créer une base de données appelée `tp` qui co
 
 ## Import des données
 
-Ensuite, il suffit d'importer le fichier JSON qui se situe <a href="https://github.com/aldevgen/data/blob/main/json/pathologies.json" download>ici</a>.
+Ensuite, il suffit d'importer le fichier `pathologies.json` qui se situe <a href="https://raw.githubusercontent.com/aldevgen/data/main/json/pathologies.json" download="pathologies.json">ici</a> (ouvrir le lien puis cliquer sur Fichier > Enregistrer Sous ou Ctrl+S sur Windows/Linux ou Cmd+S sur Mac).
 
 {% include figure.liquid loading="eager" path="assets/img/cnam/mongodb/import-data.png" title="Import data" class="img-fluid rounded z-depth-1" %}
 
@@ -354,32 +354,37 @@ sorted = db.students.find(
 pd.DataFrame(list(c))
 ```
 
-## Connexion à la base de données
+## Questions
 
-Pour la suite du TP, nous allons utiliser un notebook Jupyter (disponible ici).
+Pour la suite du TP, nous allons utiliser un Notebook Jupyter (disponible <a href="../../assets/jupyter/cnam/NoSQL_TP_MongoDB.ipynb" target="_blank" download>ici</a>). Un notebook est un document qui permet d'écrire du code exécutable, mais aussi d'ajouter du texte, des images, des vidéos, etc.
 
-Maintenant que tout est mis en place nous pouvons nous connecter à la base de données que nous avons créé.
+Le premier bloc de code du notebook permet d'installer les bibliothèques nécessaires pour manipuler les données et se connecter à la base de données MongoDB et pour manipuler les données avec Pandas.
+
+```shell
+!pip install pandas pymongo --quiet
+```
+
+Le deuxième bloc permet de se connecter à la base de données MongoDB précédemment créée. N'oubliez pas de remplacer le nom d'utilisateur, le mot de passe et le nom du cluster par les vôtres dans l'URI de connexion.
 
 ```python
 import pymongo
+import pandas as pd
 
-# Remplacer l'URI par celle récupérée sur MongoDB Atlas, en n'oubliant pas de remplacer le nom de l'utilisateur et le mot de passe
+# Remplacer l'URI par celle sur MongoDB Atlas, en n'oubliant pas de remplacer le nom de l'utilisateur, le mot de passe et le nom du cluster
 URI = 'mongodb+srv://<user_name>:<password>@<cluster_name>.mongodb.net/?retryWrites=true&w=majority&appName=<cluster_name>'
 client = pymongo.MongoClient(URI)
 db = client.tp
 
-# output the name of the collections in the database
-print("Collections: ", tp.list_studentss())
-print("Pathologies: ", tp.pathologies)
+# Afficher le nom des collections de la base de données et la collection pathologies
+print("Collections: ", db.list_collection_names())
+print("Pathologies: ", db.pathologies)
 ```
 
-## Questions
+Ensuite, utilisez le notebook pour répondre aux questions ci-dessous.
 
-Vous pouvez utiliser le <a href="/assets/jupyter/cnam/NoSQL_TP_MongoDB.ipynb" target="_blank" download>Notebook Jupyter</a> suivant pour répondre aux questions ci-dessous.
-
-1. Lister toutes les catégories de pathologies de niveau 1
+1. Quelles sont les pathologies de niveau 1 présentes dans la base de données ?
 2. Lister toutes les catégories de pathologies de niveau 2
-3. Compter le nombre de documents concernant les "Maladies cardioneurovasculaires"
+3. Combien y a-t-il de personnes avec une pathologie "Maladies cardioneurovasculaires" ?
 4. Compter le nombre de documents pour la tranche d'âge "45-49 ans"
 5. Compter le nombre de documents où la prévalence (prev) est supérieure à 0.2
 6. Lister tous les documents, en n'affichant que l'année, la pathologie de niveau 1, la région et le département
@@ -389,8 +394,6 @@ Vous pouvez utiliser le <a href="/assets/jupyter/cnam/NoSQL_TP_MongoDB.ipynb" ta
 10. Lister les pathologies où la prévalence est nulle (prev=null), en affichant la pathologie de niveau 3, la région et le département
 
 # Partie 2 : Agrégats dans MongoDB
-
-Il est bien évidemment possible de réaliser des calculs d'agrégats (de type somme, moyenne, minimum et maximum) dans MongoDB, avec la fonction `aggregate()`. Celle-ci permet beaucoup d'autres opérations.
 
 Dans la suite du TP, nous allons utiliser la collection `restaurants` de la base de données `sample_restaurants` qui est une base de données d'exemple fournie par [MongoDB](https://www.mongodb.com/docs/atlas/sample-data/sample-restaurants/), et qui contient des informations sur les restaurants de New-York.
 
@@ -431,7 +434,7 @@ Dans la suite du TP, nous allons utiliser la collection `restaurants` de la base
 
 ## Fonctions d'agrégation
 
-Cette fonction va prendre en paramètre un tableau nommé `pipeline` qui est un tableau composé d'une suite d'opérations.
+Il est possible de réaliser des calculs d'agrégats (somme, moyenne, minimum et maximum) dans MongoDB, avec la fonction `aggregate()`. Cette fonction va prendre en paramètre un tableau nommé `pipeline` qui est un tableau composé d'une suite d'opérations.
 
 > :information_source: L'ordre des opérations est important, car elles sont appliquées les unes après les autres.
 >
@@ -441,18 +444,17 @@ Cette fonction va prendre en paramètre un tableau nommé `pipeline` qui est un 
 
 Voici quelques-unes des opérations possibles :
 
-| Fonction       | Opération |
-|-|-|
+| Fonction       | Opération                                                                       |
+|-|---------------------------------------------------------------------------------|
 | `$limit`       | restriction à un petit nombre de documents (très utiles pour tester son calcul) |
-| `$sort`        | tri sur les documents |
-| `$match`       | restriction sur les documents à utiliser |
-| `$unwind`      | séparation d'un document en plusieurs sur la base d'un tableau |
-| `$addFields`   | ajout d'un champs dans les documents |
-| `$project`     | redéfinition des documents |
-| `$group`       | regroupements et calculs d'aggégrats |
-| `$sortByCount` | agrégat + tri |
-| `$lookup`      | jointure avec une autre collection |
-| ...            | |
+| `$sort`        | tri sur les documents                                                           |
+| `$match`       | restriction sur les documents à utiliser                                        |
+| `$unwind`      | séparation d'un document en plusieurs sur la base d'un tableau                  |
+| `$addFields`   | ajout d'un champs dans les documents                                            |
+| `$project`     | redéfinition des documents                                                      |
+| `$group`       | regroupements et calculs d'aggégrats                                            |
+| `$sortByCount` | agrégat + tri                                                                   |
+| `$lookup`      | jointure avec une autre collection                                              |
 
 ## Syntaxe des opérations
 
@@ -813,16 +815,16 @@ pandas.DataFrame([nb_restaurants_per_borough])
 
 ## Questions
 
-Nous utilisons la collection [`restaurants`](https://github.com/aldevgen/data/blob/main/json/pathologies.json).
-Comme dans la partie précédente, créez une nouvelle collection dans votre base de données MongoDB Compass, et importez-y les données du fichier `restaurants.json` (disponibles [ici](https://github.com/aldevgen/data/blob/main/json/pathologies.json)).
+Nous utilisons la collection [`restaurants`](https://raw.githubusercontent.com/aldevgen/data/main/json/restaurants.json).
+Comme dans la partie précédente, créez une nouvelle collection dans votre base de données MongoDB Compass, et importez-y les données du fichier `restaurants.json` (<a href="https://raw.githubusercontent.com/aldevgen/data/main/json/restaurants.json" download="restaurants.json">Fichier > Enregistrer Sous</a>).
 
-Vous pouvez utiliser le <a href="/assets/jupyter/cnam/NoSQL_TP_MongoDB.ipynb" target="_blank" download>Notebook Jupyter</a> suivant pour répondre aux questions ci-dessous.
+Vous pouvez utiliser le <a href="../../assets/jupyter/cnam/NoSQL_TP_MongoDB.ipynb" target="_blank" download>Notebook Jupyter</a> suivant pour répondre aux questions ci-dessous.
 
 1. Quelles sont les 10 plus grandes chaînes de restaurants (i.e les restaurants avec un nom identique) ?
 1. Donner le Top 5 des types de cuisine, en termes de nombre de restaurants.
 1. Donner le Flop 5 des types de cuisine, en termes de nombre de restaurants.
 1. Quelles sont les 10 rues avec le plus de restaurants ?
-1. Quelles sont les rues situées sur strictement plus de 2 quartiers ? Essayez d'ajouter le nom des quartiers de chaque rue (cf `addToSet`).
+1. Quelles sont les restaurants situés sur strictement plus de 2 quartiers ? Essayez d'ajouter le nom des quartiers de chaque rue (cf `addToSet`).
 1. Lister par quartier le nombre de restaurants et le score moyen. Attention à bien découper le tableau `grades`
 1. Donner les dates de début et de fin des évaluations
 1. Quels sont les 10 restaurants (nom, quartier, adresse et score) avec le plus petit score moyen ?
