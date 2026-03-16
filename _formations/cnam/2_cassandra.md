@@ -12,60 +12,24 @@ mermaid:
   zoomable: true
 ---
 
-# Initialisation d'une base de données Cassandra
-
-## Création d'un compte DataStax
-
-Nous allons créer un [compte DataStax](https://astra.datastax.com/signup) afin de pouvoir héberger une base de données Apache Cassandra.
-
-Une fois votre compte créé, vous allez pouvoir créer une base de données. Pour cela, cliquez sur l'onglet **Databases** puis sur **Create Database**.
-
-{% include figure.liquid loading="eager" path="assets/img/cnam/cassandra/create-database.png" title="Create database" class="img-fluid rounded z-depth-1" %}
-
-
-Cela vous amènera sur une page où vous pourrez choisir le type de base de données que vous souhaitez créer. Sélectionnez **Serverless (Non-Vector)** puis renseignez, comme indiqué ci-dessous. :warning: Attention à ne pas changer le provider (AWS par défaut).
-
-- **Nom de la base de données** : `cnam`
-- **Nom du keyspace** : `health`
-- **Région** : `eu-west-1`
-
-{% include figure.liquid loading="eager" path="assets/img/cnam/cassandra/creating-database.png" title="Creating database" class="img-fluid rounded z-depth-1" %}
-
-La création de la base de données prend quelques minutes. Pendant ce temps, retournons sur le cours.
-
-Une fois l'initialisation terminée, vous pourrez accéder à la console CQL.
-
-{% include figure.liquid loading="eager" path="assets/img/cnam/cassandra/describe-keyspace.png" title="CQL console" class="img-fluid rounded z-depth-1" %}
-
-Je vous conseille d'écrire les requêtes dans un fichier et de les copier/coller dans le terminal. Cela vous permettra de les réutiliser plus facilement.
-
-> :warning: **Création de keyspace**
->
-> Sur DataStax il n'est pas possible de créer/modifier/supprimer un keyspace via les commandes CQL. Pour cela, vous devrez passer par l'interface web.
-{: .block-warning }
-
-{% include figure.liquid loading="eager" path="assets/img/cnam/cassandra/create-keyspace.png" title="Create keyspace" class="img-fluid rounded z-depth-1" %}
-
-
-
 # Cassandra Query Language
 
-CQL (Cassandra Query Language) est le langage de requête utilisé par Apache Cassandra. Bien qu'il ressemble à SQL, il est conçu pour les opérations de base de données distribuées sans prise en charge de certaines fonctionnalités comme les jointures.
+Apache Cassandra dispose d'un langage de requête, nommé CQL pour **Cassandra Query Language**. Bien qu'il ressemble à SQL, il est conçu pour les opérations de base de données distribuées sans prise en charge de certaines fonctionnalités comme les jointures.
 
-## Données
+## Présentation des données
 
-Dans le cadre des requêtes ci-dessous, un example de données d'une bibliothèque est utilisé. Les données sont stockées dans un keyspace `library` qui contient deux tables : `users` et `loan` (*emprunt* en anglais).
+Pour mieux comprendre les commandes CQL, nous allons utiliser un exemple de données d'une bibliothèque. Les données sont stockées dans un keyspace `biblio` qui contient deux tables : `utilisateurs` et `emprunts`.
 
-### Table `users`
+### Table `utilisateurs`
 
-La table `users` contient les informations des utilisateurs de la bibliothèque :
+La table `utilisateurs` contient les informations des utilisateurs de la bibliothèque :
 - `id` : identifiant unique de l'utilisateur
-- `name` : nom de l'utilisateur
+- `nom` : nom de l'utilisateur
 - `age` : âge de l'utilisateur
 
-Ci-dessous un exemple de données pour la table `users` :
+Ci-dessous un exemple de données pour la table `utilisateurs` :
 
-| id                      | name    | age |
+| id                      | nom    | age |
 |-------------------------|---------|-----|
 | 6a6148d1-4a56-4d6a-a610 | Alice   | 30  |
 | 79e9b9b4-8b76-4cb7-8419 | Bob     | 23  |
@@ -75,17 +39,17 @@ Ci-dessous un exemple de données pour la table `users` :
 
 ---
 
-### Table `loan`
+### Table `emprunts`
 
-La table `loan` contient les informations des emprunts de livres :
-- `book_id` : identifiant du livre emprunté
-- `user_id` : identifiant de l'utilisateur
-- `loan_id` : identifiant unique de l'emprunt
+La table `emprunts` contient les informations des emprunts de livres :
+- `livre_id` : identifiant du livre emprunté
+- `utilisateur_id` : identifiant de l'utilisateur
+- `emprunt_id` : identifiant unique de l'emprunt
 - `timestamp` : date et heure de l'emprunt
 
-Voici des données pour la table `loan` :
+Voici des données pour la table `emprunts` :
 
-| book_id                  | loan_id                 | user_id                 | timestamp                |
+| livre_id                  | emprunt_id                 | utilisateur_id                 | timestamp                |
 |--------------------------| ----------------------- | ----------------------- |--------------------------|
 | 549d7790-2aa1-4710-88d4  | 437c10d7-5508-4ecf-b821 | 6a6148d1-4a56-4d6a-a610 | 2021-03-31 10:00:00+0000 |
 | 616be2d4-d205-4278-ad6d  | dc880752-f900-4454-8993 | 6a6148d1-4a56-4d6a-a610 | 2022-08-06 15:00:00+0000 |
@@ -94,9 +58,9 @@ Voici des données pour la table `loan` :
 | 0d7c6069-d250-431a-8573  | 8eabd71d-c1f0-4496-9415 | 8eabd71d-c1f0-4496-9415 | 2021-11-14 13:00:00+0000 |
 | 2f228bd5-a517-4214-8303  | f93925d8-79e6-461d-ace8 | 2c524549-09f0-4e8e-9afc | 2021-12-05 14:00:00+0000 |
 
-## Exemples de commandes en CQL
+## Commandes CQL
 
-Voici quelques exemples de commandes CQL pour interagir avec la base de données `library` qui contient les données des utilisateurs et des emprunts de livres d'une bibliothèque.
+Voici quelques exemples de commandes CQL pour interagir avec la base de données `biblio` qui contient les données des utilisateurs et des emprunts de livres d'une bibliothèque.
 
 ### Keyspaces
 
@@ -104,18 +68,18 @@ Cassandra définit des keyspaces pour regrouper les tables. Un keyspace est l'é
 
 - **Création d'un keyspace** :
 ```sql
-CREATE KEYSPACE library
+CREATE KEYSPACE biblio
 WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 3};
 ```
 
 - **Changement de keyspace** :
 ```sql
-USE library ;
+USE biblio ;
 ```
     L'instruction `USE` replace le keyspace courant par celui spécifié dans la requête.
-    Ainsi, toutes les requêtes suivantes seront exécutées dans le keyspace `library`.
+    Ainsi, toutes les requêtes suivantes seront exécutées dans le keyspace `biblio`.
     Il n'est pas nécessaire de spécifier le keyspace dans les requêtes suivantes.
-    On peut écrire directement `CREATE TABLE users (...)` sans spécifier le keyspace.
+    On peut écrire directement `CREATE TABLE utilisateurs (...)` sans spécifier le keyspace.
 
 - **Liste des keyspaces** :
 ```sql
@@ -125,13 +89,13 @@ DESCRIBE KEYSPACES;
 
 - **Description d'un keyspace** :
 ```sql
-DESCRIBE KEYSPACE library;
+DESCRIBE KEYSPACE biblio;
 ```
-    Cette commande permet de voir les détails du keyspace `library`.
+    Cette commande permet de voir les détails du keyspace `biblio`.
 
 - **Suppression d'un keyspace** :
   ```sql
-  DROP KEYSPACE IF EXISTS library;
+  DROP KEYSPACE IF EXISTS biblio;
   ```
 
 ### Création de tables
@@ -140,9 +104,9 @@ La création de tables en `CQL` est similaire à `SQL`. Il faut veiller à bien 
 
   - __Clé primaire simple__
 ```sql
-CREATE TABLE library.users (
+CREATE TABLE biblio.utilisateurs (
     id UUID PRIMARY KEY,
-    name TEXT,
+    nom TEXT,
     age INT
 );
 ```
@@ -150,27 +114,27 @@ CREATE TABLE library.users (
 
   - __Clé primaire composite__
 ```sql
-CREATE TABLE library.loan (
-    book_id UUID,
-    loan_id UUID,
-    user_id UUID,
+CREATE TABLE biblio.emprunts (
+    livre_id UUID,
+    emprunt_id UUID,
+    utilisateur_id UUID,
     timestamp TIMESTAMP,
-    PRIMARY KEY (loan_id, user_id)
+    PRIMARY KEY (emprunt_id, utilisateur_id)
 );
 ```
-  Ici nous avons une table qui possède deux colonnes comme clé primaire. Cela signifie que la combinaison de `loan_id` et `user_id` doit être unique.
+  Ici nous avons une table qui possède deux colonnes comme clé primaire. Cela signifie que la combinaison de `emprunt_id` et `utilisateur_id` doit être unique.
 
   - __Clé de clustering__
 ```sql
-CREATE TABLE library.loan (
-    book_id UUID,
-    loan_id UUID,
-    user_id UUID,
+CREATE TABLE biblio.emprunts (
+    livre_id UUID,
+    emprunt_id UUID,
+    utilisateur_id UUID,
     timestamp TIMESTAMP,
-    PRIMARY KEY ((loan_id, user_id), timestamp)
+    PRIMARY KEY ((emprunt_id, utilisateur_id), timestamp)
 ) WITH CLUSTERING ORDER BY (timestamp DESC);
 ```
-  Ici la clé primaire est composée de `loan_id` et `user_id`, et la clé de clustering est `timestamp`.
+  Ici la clé primaire est composée de `emprunt_id` et `utilisateur_id`, et la clé de clustering est `timestamp`.
   On ajoute `WITH CLUSTERING ORDER BY (timestamp DESC)` pour trier les données par ordre décroissant de `timestamp`.
 
 ### Manipulation de données
@@ -185,30 +149,30 @@ Cette commande permet de lister toutes les tables du keyspace courant.
 
 - **Description d'une table** :
 ```sql
-DESCRIBE TABLE library.users;
+DESCRIBE TABLE biblio.utilisateurs;
 ```
-Cette commande permet de voir les détails de la table `users` du keyspace `library`.
+Cette commande permet de voir les détails de la table `utilisateurs` du keyspace `biblio`.
 
 - **Insertion de données** :
   ```sql
-  INSERT INTO library.users (id, name, age)
+  INSERT INTO biblio.utilisateurs (id, nom, age)
   VALUES (6a6148d1-4a56-4d6a-a610-cdf7b7e3b959, 'Alice', 30);
 
-  INSERT INTO library.users (id, name, age)
+  INSERT INTO biblio.utilisateurs (id, nom, age)
   VALUES (uuid(), 'Bob', 23);
   ```
   Ici, l'identifiant de Bob est généré automatiquement par Cassandra via la fonction `uuid()`.
 
 - **Sélection de données** :
 ```sql
-SELECT name, age FROM library.users WHERE age > 35;
+SELECT nom, age FROM biblio.utilisateurs WHERE age > 35;
 ```
 Cette requête permet de sélectionner le nom et l'âge des utilisateurs de plus de 35 ans.
 
 <!--
     dont le résultat est le suivant :
 
-    | name    | age |
+    | nom    | age |
     |---------|-----|
     | Charlie | 45  |
     | Eve     | 36  |
@@ -216,19 +180,19 @@ Cette requête permet de sélectionner le nom et l'âge des utilisateurs de plus
 
 - **Mise à jour de données** :
 ```sql
-UPDATE library.users SET age = 31 WHERE id = 6a6148d1-4a56-4d6a-a610-cdf7b7e3b959;
+UPDATE biblio.utilisateurs SET age = 31 WHERE id = 6a6148d1-4a56-4d6a-a610-cdf7b7e3b959;
 ```
 Ici, on met à jour l'âge d'Alice (qui possède l'identifiant `6a6148d1-4a56-4d6a-a610-cdf7b7e3b959`) de 30 à 31 ans.
 
 - **Suppression de données** :
 ```sql
-DELETE FROM library.users WHERE id = 6a6148d1-4a56-4d6a-a610-cdf7b7e3b959;
+DELETE FROM biblio.utilisateurs WHERE id = 6a6148d1-4a56-4d6a-a610-cdf7b7e3b959;
 ```
-De même, qu'il est possible de supprimer les données d'Alice de la table `users`. Dans notre cas, il faudrait également supprimer les emprunts d'Alice dans la table `loan`.
+De même, qu'il est possible de supprimer les données d'Alice de la table `utilisateurs`. Dans notre cas, il faudrait également supprimer les emprunts d'Alice dans la table `emprunts`.
 
 - **Suppression d'une table** :
 ```sql
-DROP TABLE IF EXISTS library.users;
+DROP TABLE IF EXISTS biblio.utilisateurs;
 ```
 Si l'on veut supprimer une table, il suffit d'utiliser la commande `DROP TABLE` comme en SQL.
 
@@ -238,36 +202,61 @@ Les index peuvent être créés pour améliorer les performances des requêtes. 
 
 - **Création d'un index** :
 ```sql
-CREATE INDEX IF NOT EXISTS name_index ON library.users (name);
+CREATE INDEX IF NOT EXISTS nom_index ON biblio.utilisateurs (nom);
 ```
 
 - **Suppression d'un index** :
 ```sql
-DROP INDEX IF EXISTS name_index;
+DROP INDEX IF EXISTS nom_index;
 ```
 
 > :warning: **Clé primaire et partitionnement** <br/>
 > <br/>
 > Il est important de bien choisir la clé de partition et la clé de clustering pour optimiser les performances de la base de données. Aussi, il peut être nécessaire de dupliquer les données pour répondre à différents types de requêtes.<br/>
 > <br/>
-> Toutes les colonnes qui sont dans la PRIMARY KEY doivent être utilisées dans la clause `WHERE` de la requête `SELECT`. Par exemple, si la clé primaire est composée de `id` et `name`, la requête `SELECT` doit contenir ces deux colonnes dans la clause `WHERE`.
+> Toutes les colonnes qui sont dans la PRIMARY KEY doivent être utilisées dans la clause `WHERE` de la requête `SELECT`. Par exemple, si la clé primaire est composée de `id` et `nom`, la requête `SELECT` doit contenir ces deux colonnes dans la clause `WHERE`.
 > ```sql
 > SELECT *
-> FROM library.users
-> WHERE id = 6a6148d1-4a56-4d6a-a610-cdf7b7e3b959 AND name = 'Alice';
+> FROM biblio.utilisateurs
+> WHERE id = 6a6148d1-4a56-4d6a-a610-cdf7b7e3b959 AND nom = 'Alice';
 > ```
 {: .block-warning }
 
-## Documentation :
+Pour plus d'informations sur les commandes CQL, vous pouvez consulter la documentation officielle d'Apache Cassandra :
 - [Manipulation de données](https://cassandra.apache.org/doc/4.1/cassandra/cql/ddl.html) : CREATE, ALTER, DROP (table, keyspace)
 - [Requêtes](https://cassandra.apache.org/doc/4.1/cassandra/cql/dml.html) : SELECT, INSERT, UPDATE, DELETE
 
 
+# Initialisation d'une base de données
+
+Pour ce TP, nous allons créer une base de données Apache Cassandra via **Docker**. Docker est une plateforme de conteneurisation qui permet de créer, déployer et exécuter des applications dans des conteneurs. Un conteneur est une unité légère et autonome qui contient tout ce dont une application a besoin pour fonctionner, y compris le code, les packages, les dépendances et les fichiers de configuration.
+
+Pour créer la base de données, il suffit d'exécuter la commande suivante dans votre terminal (PowerShell, Git bash, etc.) :
+
+```bash
+docker run -d --name cassandra -p 9042:9042 cassandra
+```
+
+Ensuite, pour accéder à la base de données Cassandra, il faut exécuter la commande suivante :
+
+```bash
+docker exec -it cassandra cqlsh
+```
+Vous devriez voir une sortie similaire à celle-ci, indiquant que vous êtes connecté à la base de données Cassandra et que vous pouvez commencer à exécuter des commandes CQL :
+```bash
+Connected to Test Cluster at 127.0.0.1:9042
+[cqlsh 6.2.0 | Cassandra 5.0.6 | CQL spec 3.4.7 | Native protocol v5]
+Use HELP for help.
+cqlsh>
+```
+
+Ainsi, vous accédez à l'interface de ligne de commande de Cassandra, appelée `cqlsh`, qui vous permet d'exécuter des commandes CQL pour interagir avec la base de données. Vous pouvez écrire les commandes CQL directement dans l'interface après le prompt `cqlsh>`. Vous pouvez maintenant créer un keyspace, des tables et insérer des données dans votre base de données Cassandra en utilisant les commandes CQL présentées précédemment.
+
+> Il est possible que vous ayez une `Connection error` lors de l'exécution de la commande `docker exec -it cassandra cqlsh`. Si c'est le cas, attendez quelques secondes et réessayez la commande. Il faut un certain temps pour que le conteneur Cassandra soit complètement opérationnel et prêt à accepter les connexions.
+{: .block-warning }
 
 
-# Cas pratique avec Apache Cassandra
-
-Apache Cassandra est un système de gestion de base de données distribuée open-source conçu pour gérer de grandes quantités de données à travers de nombreux serveurs sans point de défaillance. Il est idéal pour les applications nécessitant une haute disponibilité, une scalabilité horizontale et une performance constante.
+# Cas pratique
 
 ## Objectif
 
