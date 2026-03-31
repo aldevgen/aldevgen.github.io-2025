@@ -231,18 +231,21 @@ Pour plus d'informations sur les commandes CQL, vous pouvez consulter la documen
 
 Pour ce TP, nous allons créer une base de données Apache Cassandra via **Docker**. Docker est une plateforme de conteneurisation qui permet de créer, déployer et exécuter des applications dans des conteneurs. Un conteneur est une unité légère et autonome qui contient tout ce dont une application a besoin pour fonctionner, y compris le code, les packages, les dépendances et les fichiers de configuration.
 
-Pour créer la base de données, il suffit d'exécuter la commande suivante dans votre terminal (PowerShell, Git bash, etc.) :
+Pour créer la base de données, il suffit d'exécuter les commandes suivantes dans votre terminal (PowerShell, Git bash, etc.) :
 
+1. Téléchargement de l'image Apache Cassandra en local.
 ```bash
-docker run -d --name cassandra -p 9042:9042 cassandra
+docker pull cassandra:latest
 ```
-
-Ensuite, pour accéder à la base de données Cassandra, il faut exécuter la commande suivante :
-
+2. Exécuter le serveur `cassandra` en local.
+```bash
+docker run -d --rm --name cassandra -p 9042:9042 cassandra
+```
+3. Ensuite, pour accéder à la base de données Cassandra, il faut exécuter la commande suivante :
 ```bash
 docker exec -it cassandra cqlsh
 ```
-Vous devriez voir une sortie similaire à celle-ci, indiquant que vous êtes connecté à la base de données Cassandra et que vous pouvez commencer à exécuter des commandes CQL :
+Vous devriez voir une sortie similaire à celle-ci, indiquant que vous êtes connecté à la base de données Cassandra et que vous pouvez commencer à exécuter des commandes CQL (après le `cqlsh>`).
 ```bash
 Connected to Test Cluster at 127.0.0.1:9042
 [cqlsh 6.2.0 | Cassandra 5.0.6 | CQL spec 3.4.7 | Native protocol v5]
@@ -252,8 +255,33 @@ cqlsh>
 
 Ainsi, vous accédez à l'interface de ligne de commande de Cassandra, appelée `cqlsh`, qui vous permet d'exécuter des commandes CQL pour interagir avec la base de données. Vous pouvez écrire les commandes CQL directement dans l'interface après le prompt `cqlsh>`. Vous pouvez maintenant créer un keyspace, des tables et insérer des données dans votre base de données Cassandra en utilisant les commandes CQL présentées précédemment.
 
-> Il est possible que vous ayez une `Connection error` lors de l'exécution de la commande `docker exec -it cassandra cqlsh`. Si c'est le cas, attendez quelques secondes et réessayez la commande. Il faut un certain temps pour que le conteneur Cassandra soit complètement opérationnel et prêt à accepter les connexions.
+> Il est possible que vous ayez une `Connection error` lors de l'exécution de la commande `docker exec -it cassandra cqlsh`. Si c'est le cas, attendez quelques secondes et réessayez la commande. Il faut un peu de temps pour que le conteneur Cassandra soit complètement opérationnel et prêt à accepter les connexions.
 {: .block-warning }
+
+> Pour ceux qui sont à l'aise avec les notebooks Jupyter, il est également possible d'exécuter des commandes CQL directement dans un notebook en utilisant la bibliothèque `cassandra-driver` de Python. Vous pouvez installer cette bibliothèque via pip :
+> ```bash
+> pip install cassandra-driver
+> ```
+> Ensuite, vous pouvez utiliser le code suivant pour vous connecter à la base de données Cassandra et exécuter des commandes CQL :
+> ```python
+> from cassandra.cluster import Cluster
+> from cassandra.auth import PlainTextAuthProvider
+>
+> # Connexion au cluster
+> cluster = Cluster(contact_points=['127.0.0.1'], port=9042)
+> session = cluster.connect()
+>
+> # Sélectionner le keyspace
+> session.set_keyspace('votre_keyspace') # Replacer par le nom du keyspace
+>
+> print("Connected to Cassandra cluster!")
+>
+> # Requête example
+> rows = session.execute("SELECT * FROM system_schema.keyspaces LIMIT 5;")
+> for row in rows:
+>     print(row)
+> ```
+{: .block-example }
 
 
 # Cas pratique
@@ -283,7 +311,7 @@ La table `cas_medicaux` contient les informations des cas médicaux :
 | `dept_code`         | Code du département               |
 | `dept_nom`          | Nom du département                |
 | `pathologie`        | Pathologie diagnostiquée          |
-| `patient_naissance` | Date de naissance du patient      |
+| `patient_date_naissance` | Date de naissance du patient      |
 | `patient_prenom`    | Prénom du patient                 |
 | `patient_sexe`      | Sexe du patient                   |
 
@@ -307,19 +335,13 @@ La table `patients` contient les informations des patients :
 
 ### 1. Création d'un keyspace
 
-Nous avons créé un keyspace `health` lors de la création de la base de données. Nous allons donc l'utiliser pour stocker nos données. Nous allons maintenant populer ce keyspace avec les données des cas médicaux et des patients.
+Nous avons créé un keyspace `hopital` lors de la création de la base de données. Nous allons donc l'utiliser pour stocker nos données. Nous allons maintenant populer ce keyspace avec les données des cas médicaux et des patients.
 
 ### 2. Création du schéma de données
 
-{% tabs group-name %}
+À partir du cours, créez les tables `cas_medicaux` et `patients` dans le keyspace `hopital` avec les colonnes décrites ci-dessus.
 
-{% tab group-name Question %}
-
-À partir du cours, créez les tables `cas_medicaux` et `patients` dans le keyspace `health` avec les colonnes décrites ci-dessus.
-
-{% endtab %}
-
-{% tab group-name Correction %}
+Correction
 
 ```sql
 -- Table pour les cas médicaux
@@ -331,7 +353,7 @@ CREATE TABLE IF NOT EXISTS cas_medicaux (
     code_patho TEXT,
     patient_prenom TEXT,
     patient_sexe TEXT,
-    patient_naissance DATE,
+    patient_date_naissance DATE,
     dept_code TEXT,
     dept_nom TEXT
 );
@@ -347,59 +369,38 @@ CREATE TABLE IF NOT EXISTS patients (
 );
 ```
 
-{% endtab %}
-
-{% endtabs %}
-
 ### 3. Insertion des données
-
-{% tabs group-name %}
-
-{% tab group-name Question %}
 
 Insérer dans la table `cas_medicaux` les données du patient `23257`.
 
-| id     | code_patho | date_diag  | dept_code | dept_nom | pathologie         | patient_naissance | patient_prenom | patient_sexe |
+| id     | code_patho | date_diag  | dept_code | dept_nom | pathologie         | patient_date_naissance | patient_prenom | patient_sexe |
 |--------|------------|------------|-----------|----------|--------------------|-------------------|----------------|--------------|
 | 23257  | addictions | 2021-01-12 |        72 |   Sarthe | Troubles addictifs |        1946-08-27 |        aaliyah |            f |
 
 
-{% endtab %}
-
-{% tab group-name Correction %}
+Correction
 
 ```sql
-INSERT INTO cas_medicaux (id, date_diag, pathologie, code_patho, patient_prenom, patient_sexe, patient_naissance, dept_code, dept_nom)
+INSERT INTO cas_medicaux (id, date_diag, pathologie, code_patho, patient_prenom, patient_sexe, patient_date_naissance, dept_code, dept_nom)
 VALUES (
     '23257',
     '2021-01-12',
     'Troubles addictifs',
     'addictions',
     'aaliyah',
-    'f',
+    'F',
     '1946-08-27',
     '72',
     'Sarthe'
 );
 ```
-
-{% endtab %}
-
-{% endtabs %}
-
-{% tabs group-name %}
-
-{% tab group-name Question %}
-
 Puis, insérer dans la table `patients` les données suivantes :
 
 | id  | date_naissance | pathologies                                                                                                                                                                                                                                                                       | prenom  | sexe|
 |-----|----------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|-----|
 | 403 | 1927-02-11     | [{'date': '2021-08-08', 'dept': '09', 'intitule': 'Maladies inflammatoires chroniques'}, {'date': '2023-04-11', 'dept': '09', 'intitule': 'Accident vasculaire cérébral'}, {'date': '2022-07-02', 'dept': '09', 'intitule': 'Maladies métaboliques, héréditaires ou amylose'}]   | allison |    f|
 
-{% endtab %}
-
-{% tab group-name Correction %}
+Correction
 
 ```sql
 INSERT INTO patients (id, prenom, sexe, date_naissance, pathologies)
@@ -411,10 +412,6 @@ VALUES (
     [{'intitule': 'Maladies inflammatoires chroniques', 'date': '2021-08-08', 'dept': '09'}, {'intitule': 'Accident vasculaire cérébral', 'date': '2023-04-11', 'dept': '09'}, {'intitule': 'Maladies métaboliques, héréditaires ou amylose', 'date': '2022-07-02', 'dept': '09'}]
 );
 ```
-
-{% endtab %}
-
-{% endtabs %}
 
 Une fois les deux requêtes d'insertion effectuées, vous pouvez insérer les données contenues dans le fichier `init.cql` qui est téléchargeable <a href="/assets/code/init.cql" download>ici</a>.
 
@@ -456,14 +453,202 @@ Où `dept` est la clé primaire.
 
 8) Insérer les données des patients ayant des pathologies dans la table `patients_pathologie_dept` qui sont <a href="/assets/code/init_dept.cql" download>ici</a>.
 
----
-
 :tada: Bravo, vous venez de requêter des données de santé stockées dans une base de données Apache Cassandra avec CQL !
 
-> :exclamation: Avant de finir, n'oubliez pas de supprimer la base de données pour ne pas consommer de ressources inutilement. Pour cela, il suffit d'aller dans `Settings > Terminate Database`
-{: .block-danger }
 
-Cliquer sur l'onglet `Settings`
-{% include figure.liquid loading="eager" path="assets/img/cnam/settings.png" title="Settings" class="img-fluid rounded z-depth-1" %}
-puis descendre pour trouver la section `Terminate Database`.
-{% include figure.liquid loading="eager" path="assets/img/cnam/terminate-database.png" title="Terminate database" class="img-fluid rounded z-depth-1" %}
+<!--
+
+## Requêtage des données
+
+### 1. Création d'un keyspace
+
+Nous allons créér un keyspace `hopital` que nous allons donc utiliser pour stocker nos données.
+
+Question 1 : Créer un keyspace hopital avec une réplication simple.
+
+```sql
+CREATE KEYSPACE hopital
+WITH REPLICATION = {
+  'class' : 'SimpleStrategy',
+  'replication_factor' : 1
+};
+USE hopital;
+```
+
+### 2. Création du schéma de données
+
+Question 1.3 : Créer une table patients avec les champs suivants : patient_id (UUID), nom (TEXT), prenom (TEXT), date_naissance (DATE).
+Corrigé : CREATE TABLE patients (
+  patient_id UUID PRIMARY KEY,
+  nom TEXT,
+  prenom TEXT,
+  date_naissance DATE
+);
+
+Partie 2 : Modélisation des données et requêtes de base (1h)
+Objectif : Comprendre la modélisation des données et effectuer des requêtes CRUD.
+Question 2.1 : Insérer 3 patients dans la table patients.
+Corrigé : INSERT INTO patients (patient_id, nom, prenom, date_naissance)
+VALUES (uuid(), 'Dupont', 'Jean', '1980-05-15');
+INSERT INTO patients (patient_id, nom, prenom, date_naissance)
+VALUES (uuid(), 'Martin', 'Marie', '1990-08-22');
+INSERT INTO patients (patient_id, nom, prenom, date_naissance)
+VALUES (uuid(), 'Bernard', 'Pierre', '1975-11-30');
+Question 2.2 : Créer une table consultations avec une clé de partition et une clé de clustering pour stocker les consultations d’un patient, triées par date décroissante.
+Corrigé : CREATE TABLE consultations (
+  patient_id UUID,
+  consultation_id UUID,
+  medecin_id UUID,
+  date_heure TIMESTAMP,
+  diagnostic TEXT,
+  traitement TEXT,
+  PRIMARY KEY ((patient_id), date_heure, consultation_id)
+) WITH CLUSTERING ORDER BY (date_heure DESC);
+Question 2.3 : Insérer 2 consultations pour un patient existant.
+Corrigé : INSERT INTO consultations (patient_id, consultation_id, medecin_id, date_heure, diagnostic, traitement)
+VALUES (uuid(), uuid(), uuid(), toTimestamp(now()), 'Grippe', 'Paracétamol');
+INSERT INTO consultations (patient_id, consultation_id, medecin_id, date_heure, diagnostic, traitement)
+VALUES (uuid(), uuid(), uuid(), toTimestamp(now() - 10), 'Allergie', 'Antihistaminiques');
+Question 2.4 : Écrire une requête pour lister toutes les consultations d’un patient, triées par date décroissante.
+Corrigé : SELECT * FROM consultations WHERE patient_id = ?;
+
+Partie 3 : Optimisation et requêtes avancées (1h)
+Objectif : Utiliser des index secondaires, des collections, et des requêtes batch.
+Question 3.1 : Ajouter un index secondaire sur le champ diagnostic pour permettre des recherches par diagnostic.
+Corrigé : CREATE INDEX ON consultations (diagnostic);
+Question 3.2 : Écrire une requête pour trouver tous les patients ayant eu un diagnostic de "Grippe".
+Corrigé : SELECT * FROM consultations WHERE diagnostic = 'Grippe' ALLOW FILTERING;
+Question 3.3 : Modifier la table consultations pour ajouter une collection symptomes (liste de TEXT).
+Corrigé : ALTER TABLE consultations ADD symptomes LIST<TEXT>;
+Question 3.4 : Mettre à jour une consultation pour ajouter des symptômes.
+Corrigé : UPDATE consultations
+SET symptomes = ['fièvre', 'toux']
+WHERE patient_id = ? AND date_heure = ? AND consultation_id = ?;
+-->
+
+<!--
+
+Cas d’usage : Gestion de Dossiers Patients
+Scénario
+Vous travaillez pour un hôpital qui souhaite stocker les dossiers patients de manière sécurisée, scalable et disponible. Chaque dossier contient :
+
+Identifiant unique du patient
+Nom, prénom, date de naissance
+Historique des consultations (date, médecin, diagnostic, traitement)
+Allergies et antécédents médicaux
+
+Modélisation des données
+Dans Cassandra, on pense requêtes avant tables. Voici les requêtes principales :
+
+Trouver un patient par son identifiant.
+Lister l’historique des consultations d’un patient.
+Trouver tous les patients ayant consulté un médecin donné.
+Schéma proposé
+```sql
+
+-- Création du keyspace (équivalent d'une base de données)
+CREATE KEYSPACE hospital WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};
+
+-- Utilisation du keyspace
+USE hospital;
+
+-- Table Patients
+CREATE TABLE patients (
+    patient_id UUID PRIMARY KEY,
+    nom TEXT,
+    prenom TEXT,
+    date_naissance DATE,
+    allergies SET<TEXT>,
+    antecedents LIST<TEXT>
+);
+
+-- Table Consultations (historique par patient)
+CREATE TABLE consultations (
+    patient_id UUID,
+    consultation_date TIMESTAMP,
+    medecin TEXT,
+    diagnostic TEXT,
+    traitement TEXT,
+    PRIMARY KEY ((patient_id), consultation_date)
+) WITH CLUSTERING ORDER BY (consultation_date DESC);
+
+-- Table Consultations par médecin (pour la requête 3)
+CREATE TABLE consultations_par_medecin (
+    medecin TEXT,
+    patient_id UUID,
+    consultation_date TIMESTAMP,
+    diagnostic TEXT,
+    traitement TEXT,
+    PRIMARY KEY ((medecin), consultation_date, patient_id)
+) WITH CLUSTERING ORDER BY (consultation_date DESC);
+```
+
+4. Manipulation des données avec CQL
+Insertion de données
+
+```sql
+-- Insertion d'un patient
+INSERT INTO patients (patient_id, nom, prenom, date_naissance, allergies, antecedents)
+VALUES (uuid(), 'Dupont', 'Jean', '1980-05-15', {'penicilline'}, ['diabète', 'hypertension']);
+
+-- Insertion d'une consultation
+INSERT INTO consultations (patient_id, consultation_date, medecin, diagnostic, traitement)
+VALUES (uuid(), toTimestamp(now()), 'Dr Martin', 'Grippe', 'Paracétamol');
+
+-- Insertion dans la table consultations_par_medecin
+INSERT INTO consultations_par_medecin (medecin, patient_id, consultation_date, diagnostic, traitement)
+VALUES ('Dr Martin', uuid(), toTimestamp(now()), 'Grippe', 'Paracétamol');
+```
+
+Requêtes
+
+```sql
+-- 1. Trouver un patient par son identifiant
+SELECT * FROM patients WHERE patient_id = ?
+
+-- 2. Lister l’historique des consultations d’un patient
+SELECT * FROM consultations WHERE patient_id = ?
+
+-- 3. Trouver tous les patients ayant consulté un médecin donné
+SELECT * FROM consultations_par_medecin WHERE medecin = 'Dr Martin';
+```
+
+5. Exercices pratiques avec corrections
+Exercice 1 : Modélisation
+Question : Proposez un schéma pour stocker les résultats de laboratoire (type d’analyse, date, résultat, patient).
+
+Correction :
+```sql
+CREATE TABLE resultats_labo (
+    patient_id UUID,
+    date_analyse TIMESTAMP,
+    type_analyse TEXT,
+    resultat TEXT,
+    PRIMARY KEY ((patient_id), date_analyse)
+) WITH CLUSTERING ORDER BY (date_analyse DESC);
+```
+Exercice 2 : Requêtes
+Question : Écrivez les requêtes CQL pour :
+
+Lister tous les patients allergiques à la pénicilline.
+Trouver le nombre de consultations par médecin.
+
+Correction :
+```sql
+-- Patients allergiques à la pénicilline
+SELECT * FROM patients WHERE allergies CONTAINS 'penicilline' ALLOW FILTERING;
+
+-- Nombre de consultations par médecin
+SELECT medecin, COUNT(*) FROM consultations_par_medecin GROUP BY medecin;
+```
+
+Exercice 3 : Optimisation
+Question : Comment optimiseriez-vous la table consultations_par_medecin si l’hôpital a 10 000 médecins ?
+
+Correction :
+
+Utiliser une clé de partition plus fine (ex : medecin_specialite).
+Limiter le nombre de partitions par nœud.
+Éviter les partitions trop grosses en répartissant les données.
+
+-->
