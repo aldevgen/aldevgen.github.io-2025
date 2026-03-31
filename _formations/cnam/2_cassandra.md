@@ -6,7 +6,7 @@ importance: 1
 category: "Cnam CS103 - Introduction au NoSQL"
 permalink: /cnam/cassandra/
 type: formation
-visible: false
+visible: true
 mermaid:
   enabled: true
   zoomable: true
