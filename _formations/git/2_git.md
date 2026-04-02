@@ -1,10 +1,10 @@
 ---
 layout: page
-title: Introduction
-description: Introduction à git
+title: Commandes
+description: Comment fonctionne git ?
 importance: 2
 category: Git
-permalink: /git/introduction/
+permalink: /git/instructions/
 type: formation
 visible: true
 mermaid:
@@ -12,4 +12,4 @@ mermaid:
   zoomable: true
 ---
 
-# Qu'est-ce que git ?
+# Comment fonctionne git ?
