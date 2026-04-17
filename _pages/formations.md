@@ -2,12 +2,17 @@
 layout: page
 title: Formations
 permalink: /formations/
-description: Ressources pédagogiques pour les étudiants du BUT Science des Données et du certificat CS103 Intelligence Artificielle en Santé du Cnam
+description: >
+  Ressources pédagogiques pour les étudiants du BUT Science des Données
+  et les auditeurs du certificat CS103 Intelligence Artificielle en Santé du Cnam
 nav: true
-nav_order: 3
-#display_categories: [Git, BUT 2 - Programmation Orientée Objet, BUT 3 - NoSQL, BUT 3 - SAÉ NoSQL, "Cnam CS103 - Introduction au NoSQL"]
+nav_order: 1
 display_categories: [
-  "BUT 2 - Programmation Orientée Objet",
+#  "Prérequis",
+#  "Versionnage avec git",
+  "BUT 2 - Programmation Orientée Objet en Python",
+#  "BUT 3 - Des bases de données distribuées au NoSQL",
+#  "BUT 3 - SAÉ migration vers NoSQL",
   "Cnam CS103 - Introduction au NoSQL"
 ]
 horizontal: false
