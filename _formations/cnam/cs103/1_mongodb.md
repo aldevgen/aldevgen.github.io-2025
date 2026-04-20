@@ -405,7 +405,7 @@ Pour la suite du TP, nous allons utiliser un Notebook Jupyter. Un notebook est u
 
 <div class="container">
   <a class="download-btn"
-    href="../../../../assets/jupyter/cnam/NoSQL_TP_MongoDB.ipynb"
+    href="https://raw.githubusercontent.com/aldevgen/aldevgen.github.io/refs/heads/main/assets/jupyter/cnam/NoSQL_TP_MongoDB.ipynb"
     target="_blank"
     download>
       <button><i class="fa-solid fa-file-code"></i> Notebook Jupyter</button>

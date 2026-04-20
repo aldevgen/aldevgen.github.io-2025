@@ -1,10 +1,10 @@
----
+<!---
 layout: page
 permalink: /skills/
 title: Skills
 nav: true
 nav_order: 2
----
+--->
 
 ### DevOps
 
