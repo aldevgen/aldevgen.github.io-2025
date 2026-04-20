@@ -1,0 +1,29 @@
+/*****************************
+ * Formations styles
+ *****************************/
+
+//.container {
+//  display: flex;
+//  gap: 20px; /* Adds space between the links */
+//  align-items: center;
+//}
+
+.download-btn {
+  background-color: #4e0f81;
+  color: #4e0f81;
+  padding: 12px 30px;
+  border: none;
+  //border-radius: 10px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+  display: inline-flex;
+  align-items: center;
+}
+.download-btn i {
+  margin-right: 8px;
+}
+.download-btn:hover {
+  background-color: #2a0752;
+}
