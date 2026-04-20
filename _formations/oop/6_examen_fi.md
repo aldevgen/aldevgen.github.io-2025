@@ -3,12 +3,12 @@ layout: page
 title: TP6
 description: >
   TP noté
-importance: 7
+importance: 8
 category: BUT 2 - Programmation Orientée Objet
 mermaid:
   enabled: true
   zoomable: true
-permalink: /oop/exam/
+permalink: /oop/exam/fi/
 visible: false
 type: formation
 ---
@@ -21,10 +21,17 @@ type: formation
 
 L'objectif de ce TP est de mobiliser les notions abordées lors des TPs.
 
-L'accès à Internet est autorisé pour consulter la documentation Python, mais il est interdit de communiquer avec d'autres personnes ou d'utiliser des outils d'IA ou des chatbots tels que ChatGPT. En cas de triche, la note de 0 sera attribuée.
+> #### :exclamation: Consignes
+>
+> L'accès à Internet est autorisé pour **consulter la documentation Python**. Il est **interdit de communiquer** avec d'autres personnes ou d'**utiliser des outils d'Intelligence Artificielle** tels que ChatGPT ou les auto-complétions de code. **En cas de triche, la note de 0 sera attribuée.**
+>
+{: .block-danger }
 
-:warning: Les conventions de nommage ainsi que toutes les règles de bonnes pratiques seront prises en compte dans la notation. Au moins, une classe doit être documentée.
-
+> #### :information_source: Barème
+>
+> Les conventions de nommage ainsi que toutes les règles de bonnes pratiques seront prises en compte dans la notation. Au moins une classe doit être complètement documentée.
+>
+{: .block-warning }
 ---
 
 ### :notes: Gestion d'un système de musique et de podcasts
@@ -143,10 +150,10 @@ classDiagram
 
 <b><u>Méthodes</u></b>
 - `__str__()` : une méthode spéciale permettant d'afficher les informations du podcast au format suivant `Podcast title by host_name has number_episodes (duration seconds)` par exemple `Y'a plus de saisons by Swann Périssé has 12 episodes (92501 seconds)`.
-- `play(seconds: int)` : une méthode permettant de lire le podcast 
+- `play(seconds: int)` : une méthode permettant de lire le podcast
   - Si `seconds` est spécifié par l'utilisateur, ajouter `seconds` à `current`.
   - Sinon ajouter 10 minutes à la variable `current` (10 minutes = 600 secondes)
-- `rate_podcast(rating: int)` : permet de noter (entre 1 et 5) le podcast. 
+- `rate_podcast(rating: int)` : permet de noter (entre 1 et 5) le podcast.
   - Ajoute une note (`rating`) dans la liste de notes (`ratings`).
   - Si la note est inférieure à 1 ou supérieure à 5, une exception `InvalidRatingError` doit être levée.
 - `average_rating()` : retourne la note moyenne du podcast, vous pouvez utiliser la méthode `mean` du module `statistics`.

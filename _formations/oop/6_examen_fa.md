@@ -25,7 +25,7 @@ type: formation
 
 > #### :exclamation: Consignes
 >
-> L'accès à Internet est autorisé pour **consulter la documentation Python**. Il est **interdit de communiquer** avec d'autres personnes ou d'**utiliser des outils d'Intelligence Artificielle** tels que ChatGPT. **En cas de triche, la note de 0 sera attribuée.**
+> L'accès à Internet est autorisé pour **consulter la documentation Python**. Il est **interdit de communiquer** avec d'autres personnes ou d'**utiliser des outils d'Intelligence Artificielle** tels que ChatGPT ou les auto-complétions de code. **En cas de triche, la note de 0 sera attribuée.**
 >
 {: .block-danger }
 
@@ -48,7 +48,7 @@ StreamFlix propose deux types d'abonnements :
 Vous devez concevoir et implémenter un système orienté objet qui permettra de :
 
 1. Gérer différents types de contenus (films et séries)
-2. Gérer les abonnements des utilisateurs 
+2. Gérer les abonnements des utilisateurs
 3. Gérer les visionnages
 4. Implémenter des tests unitaires
 
@@ -57,8 +57,8 @@ classDiagram
     class Content {
         - id : int
         + title : str
-        + genre : str 
-        + year : int 
+        + genre : str
+        + year : int
         # ratings : list[int]
         + duration : int
         + __init__(id, title, genre, year, duration)
@@ -68,14 +68,14 @@ classDiagram
         + add_rating(rating: int) void
         +__eq__(other) bool
     }
-    
+
     class Movie {
         + __init__(id, title, genre, year, duration)
         + is_long_movie() bool
         + __str__()
         +__eq__(other) bool
     }
-    
+
     class Series {
         + num_seasons int
         + episodes_per_season list~int~
@@ -85,7 +85,7 @@ classDiagram
         + __str__()
         + __lt__(other: Series)
     }
-    
+
     class Subscription {
         <<abstract>>
         # viewed_time int
@@ -95,22 +95,21 @@ classDiagram
         + __init__(type: str, monthly_price: float, quality: str)
         + can_watch(content: Content) bool
         + add_viewed_time(duration: int) void
-        + show_advertisement() void
         + is_premium() bool
     }
-    
+
     class FreeSubscription {
         + can_watch(content: Content) bool
         + add_viewed_time(duration: int) void
         + show_advertisement() void
         + is_premium() bool
     }
-    
+
     class PremiumSubscription {
         + can_watch(content: Content) bool
         + is_premium() bool
     }
-    
+
     class User {
         + id int
         + username str
@@ -120,7 +119,7 @@ classDiagram
         + __init__(id, username, email, subscription)
         + watch(content: Content)
     }
-    
+
     class WatchHistory {
         + history : dict
         + __init__()
@@ -128,7 +127,7 @@ classDiagram
         + get_history(user_id)
         + most_watched_genre(user_id)
     }
-    
+
     Content <|-- Movie
     Content <|-- Series
     Subscription <|-- FreeSubscription
@@ -145,9 +144,9 @@ classDiagram
 |----------------------------------------------|----------------------------------------------------|
 | `id`                                         | Identifiant du film                                |
 | `title`                                      | Titre du contenu                                   |
-| `genre`                                      | Genre du contenu.                                  
-| `year`	                                      | Année de sortie.                                   |             
-| `ratings`	                                   | Liste des évaluations du contenu.                  |  
+| `genre`                                      | Genre du contenu.
+| `year`	                                      | Année de sortie.                                   |
+| `ratings`	                                   | Liste des évaluations du contenu.                  |
 | `duration`	                                  | Durée du contenu en minutes.                       |
 | `__init__(id, title, genre, year, duration)` | 	Constructeur de la classe Content.                |
 | `get_id()`                                   | 	Retourne l'identifiant du contenu.                |
@@ -194,7 +193,6 @@ La classe `Subscription` définit les méthodes et attributs communs à tous les
 | `__init__()` | Constructeur initialisant le temps de visionnage à 0 |
 | `can_watch(content: Content) -> bool` | Méthode abstraite déterminant si un média peut être visionné |
 | `add_viewing_time(duration: int)` | Méthode ajoutant du temps au compteur de visionnage |
-| `show_advertisement()` | Méthode gérant l'affichage des publicités |
 | `is_premium() -> bool` | Méthode abstraite indiquant si l'abonnement est premium |
 
 ---
@@ -220,7 +218,6 @@ La classe `PremiumSubscription` définit les méthodes et attributs spécifiques
 |------------------|-------------|
 | `can_watch(content: Content) -> bool` | Retourne toujours `True` car aucune limite de temps pour les abonnés premium |
 | `add_viewing_time(duration: int)` | Ne fait rien car pas de limite de temps pour les abonnements premium |
-| `show_advertisement()` | Ne fait rien car pas de publicités pour les abonnements premium |
 | `is_premium() -> bool` | Retourne toujours `True` car c'est un abonnement premium |
 
 ---
@@ -313,7 +310,7 @@ Créer un fichier main avec :
 
 ### Tests unitaires
 
-Vous devez écrire des tests unitaires pour les classes `Movie`, `Series`, `User` et `WatchHistory`. Les tests doivent couvrir les cas normaux et les cas limites.  
+Vous devez écrire des tests unitaires pour les classes `Movie`, `Series`, `User` et `WatchHistory`. Les tests doivent couvrir les cas normaux et les cas limites.
 
 <!--
 
@@ -667,5 +664,3 @@ classDiagram
     Series ..> Actor : uses
 ```
 -->
-
-
